@@ -5,24 +5,57 @@ import Datatable from '../common/datatable';
 import UtilsService from '../../services/utils';
 import SchoolService from '../../services/school';
 
+import EditBoard from './editBoard';
+import { FILE_URL } from '../../constants/actionTypes'
+
 function UpdateSchoolData(props) {
+
+    const [modal, setModal] = useState();
+    const [modalData, setModalData] = useState();
 
     let schoolDetailsId = props.match.params.schoolDetailsId;
 
-    const showSchool = data => {
-        props.history.push("/updateSchool/" + data)
+    const editBoardData = (data) => {
+        setModalData(data)
+        toggle();
     }
+
+    const toggle = () => {
+        setModal(!modal)
+    }
+
+    const multipleImageHandler = (imagesObject) => {
+        let imageArray = []
+        for (let index = 0; index < imagesObject.length; index++) {
+            const element = imagesObject[index];
+            imageArray.push(element);
+        }
+        return imageArray
+    }
+    const uploadImage = async () => {
+        let formData = new FormData();
+        formData.append("schoolDetailsId", schoolDetails._id);
+
+        imageUpload.forEach(eachImage => {
+            formData.append('image', eachImage)
+        });
+        let response = await SchoolService.uploadGalleryImages(formData);
+        if (response.data.status) {
+            window.location.reload();
+        }
+    }
+
     const columnsDynamic = [
         {
             Header: <b>Board Name</b>,
-            accessor: 'board',
+            accessor: 'board.name',
             style: {
                 textAlign: 'center'
             }
         },
         {
             Header: <b>Board Medium</b>,
-            accessor: 'medium',
+            accessor: 'medium.name',
             style: {
                 textAlign: 'center'
             }
@@ -33,7 +66,7 @@ function UpdateSchoolData(props) {
             accessor: str => "edit",
             Cell: (row) => (
                 <div className="btn-group">
-                    <button className="btn btn btn-success" type="button" onClick={() => showSchool(row.original._id)}>
+                    <button className="btn btn btn-success" type="button" onClick={() => editBoardData(row.original)}>
                         <span className="" >Edit</span>
                     </button>
                 </div>
@@ -53,6 +86,9 @@ function UpdateSchoolData(props) {
     const [facilities, setFacilities] = useState([])
     const [schoolType, setSchoolType] = useState([])
 
+    // images
+    const [imageUpload, setImageUpload] = useState([])
+
     // school details
     const [schoolDetails, setschoolDetails] = useState([])
 
@@ -65,8 +101,6 @@ function UpdateSchoolData(props) {
         payload.schoolType = schoolDetails.schoolType
         payload.boardingType = schoolDetails.boardingType
         payload.schoolDetailsId = schoolDetails._id
-
-        console.log("onSubmitSchoolDetails : : :", payload);
 
         let response = await SchoolService.updateSchoolDetails(item);
         console.log("response", response);
@@ -81,6 +115,7 @@ function UpdateSchoolData(props) {
 
     async function fetchUtils() {
         let utilsData = await UtilsService.fetchUtils();
+        console.log("utilsData", utilsData);
         setBoardingType(utilsData.boardingType);
         setBoards(utilsData.boards);
         setEducationMedium(utilsData.educationMedium);
@@ -205,7 +240,7 @@ function UpdateSchoolData(props) {
                                     className="form-control"
                                     onChange={(e) => { handleChange(setschoolDetails, { schoolType: e.target.value }) }}
                                     value={schoolDetails.schoolType ? schoolDetails.schoolType : 'default'}
-                                    ref={register({ validate: value => value != '' })} >
+                                    ref={register({ validate: value => value !== '' })} >
                                     <option value="default">--Select--</option>
                                     {schoolType.map((items, index) => {
                                         return (
@@ -223,7 +258,7 @@ function UpdateSchoolData(props) {
                                     className="form-control"
                                     onChange={(e) => { handleChange(setschoolDetails, { boardingType: e.target.value }) }}
                                     value={schoolDetails.boardingType ? schoolDetails.boardingType : 'default'}
-                                    ref={register({ validate: value => value != '' })}>
+                                    ref={register({ validate: value => value !== '' })}>
                                     <option value="default">--Select--</option>
                                     {boardingType.map((items, index) => {
                                         return (
@@ -293,11 +328,11 @@ function UpdateSchoolData(props) {
                         <div className='col-4'>
                             <label for="differentlyAbled">Differently Abled</label>
                             <div className="form-check">
-                                <input className="form-check-input" type="radio" name="differentlyAbled" id="differentlyAbled" defaultValue={true} ref={register} />
+                                <input className="form-check-input" type="radio" name="differentlyAbled" id="differentlyAbled" value={true} ref={register} />
                                 <label className="form-check-label" for="differentlyAbled" >Yes</label>
                             </div>
                             <div className="form-check">
-                                <input className="form-check-input" type="radio" name="differentlyAbled" id="differentlyAbled" defaultValue={false} ref={register} />
+                                <input className="form-check-input" type="radio" name="differentlyAbled" id="differentlyAbled" value={false} defaultChecked ref={register} />
                                 <label className="form-check-label" for="differentlyAbled" >No</label>
                             </div>
                         </div>
@@ -311,18 +346,43 @@ function UpdateSchoolData(props) {
                         <div className='col-12'>
                             <label for="facilities">Facilities</label>
                             {facilities.map((items, index) => {
-                                return (
-                                    <div className="form-check form-check" key={items._id}>
-                                        <input className="form-check-input" type="checkbox" name="facilities" value={items._id} ref={register} />
-                                        <label className="form-check-label" >{items.name}</label>
-                                    </div>
-                                )
+                                if (schoolDetails.facilities && schoolDetails.facilities.some(item => item === items._id)) {
+                                    return (
+                                        <div className="form-check form-check" key={items._id}>
+                                            <input className="form-check-input"
+                                                type="checkbox"
+                                                name="facilities"
+                                                defaultChecked
+                                                value={items._id}
+                                                ref={register} />
+                                            <label className="form-check-label" >{items.name}</label>
+                                        </div>
+                                    )
+                                }
+                                else {
+                                    return (
+                                        <div className="form-check form-check" key={items._id}>
+                                            <input className="form-check-input"
+                                                type="checkbox"
+                                                name="facilities"
+                                                value={items._id}
+                                                ref={register} />
+                                            <label className="form-check-label" >{items.name}</label>
+                                        </div>
+                                    )
+                                }
+
                             })}
                         </div>
                     </div>
 
                     <div className='row my-2'>
                         <div className='col-12'>
+
+                            <button className="btn btn btn-success" type="button" onClick={() => editBoardData({ schoolDetailsId: schoolDetails._id })}>
+                                <span className="" >Add Board</span>
+                            </button>
+
                             <div className="table-responsive">
                                 <Datatable
                                     myData={schoolDetails.schoolBoard && schoolDetails.schoolBoard}
@@ -337,8 +397,34 @@ function UpdateSchoolData(props) {
                     <button type="submit" className="btn btn-primary">Submit</button>
 
                 </form>
+
+                <form className=' form mx-3 my-3' name="submitImage">
+                    <div className='row my-2'>
+
+                        {schoolDetails.gallery && schoolDetails.gallery.map((items, index) => {
+                            return (
+                                <img src={FILE_URL + items.link} style={{ width: "50%", height: "50%" }} alt="Image not found" key={items._id} />
+                            )
+                        })}
+                    </div>
+                    <div className='row my-2'>
+                        <h1>Gallery Image</h1>
+                        <div className='col-10'>
+                            <input type='file'
+                                className='form-control'
+                                name='galleryImage'
+                                multiple='multiple'
+                                accept='image/*'
+                                onChange={(e) => { let imageArray = multipleImageHandler(e.target.files); setImageUpload(imageArray); }} />
+                        </div>
+                        <div className='col-2'>
+                            <button type='button' onClick={uploadImage} className="btn btn-secondary">Upload</button>
+                        </div>
+                    </div>
+                </form>
             </div>
-        </div >
+            {modal ? <EditBoard toggle={toggle} modal={modal} modalData={modalData} masterData={{ boards: boards, educationMedium: educationMedium }} /> : null}
+        </div>
 
     );
 }

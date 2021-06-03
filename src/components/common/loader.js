@@ -1,4 +1,4 @@
-import React, { Fragment , useState , useEffect } from 'react';
+import React, { Fragment } from 'react';
 
 const Loader = () => {
     // const [show, setShow] = useState(false);

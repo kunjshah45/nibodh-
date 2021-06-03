@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { withRouter } from 'react-router-dom';
+import React, {  } from 'react';
 import useForm from 'react-hook-form';
 import SchoolService from '../../services/school';
 
@@ -8,12 +7,15 @@ function AddSchoolUser(props) {
     const { register, handleSubmit, errors } = useForm();
 
     const onSubmitSchoolUser = async (item) => {
-        console.log("onSubmitSchoolUser : : :", item);
 
+        console.log("item",item);
         let response = await SchoolService.addSchoolUser(item);
-        console.log("response", response);
-        // props.history.push("/jobs/activeJobs")
 
+        props.history.push("/viewSchools")
+    }
+
+    const viewSchools = () => {
+        props.history.push("/viewSchools")
     }
 
     const registerAsData = [
@@ -28,7 +30,10 @@ function AddSchoolUser(props) {
     return (
         <div className="container">
             <div className="card" >
-                <div className="card-header ml-3">
+                <div className='row'>
+                    <button className="btn btn-primary" style={{textAlign: 'center', width:'20%'}} onClick={viewSchools}>View Schools</button>
+                </div>
+                <div className="card-header ml-3 my-2">
                     <h5>Add School User</h5>
                 </div>
                 <form className="form mx-3 my-3" onSubmit={handleSubmit(onSubmitSchoolUser)}>
@@ -37,7 +42,7 @@ function AddSchoolUser(props) {
                         <div className='col-12'>
                             <div className="form-group">
                                 <label for="schoolName">School Name</label>
-                                <input type="text" className="form-control" name="schoolName" id="schoolName" aria-describedby="schoolName" placeholder="Enter School Email" ref={register} required />
+                                <input type="text" className="form-control" name="schoolName" id="schoolName" aria-describedby="schoolName" placeholder="Enter School Name" ref={register} required />
                             </div>
                         </div>
                     </div>
@@ -68,7 +73,7 @@ function AddSchoolUser(props) {
                         <div className='col-6'>
                             <div className="form-group">
                                 <label for="registerAs">Register As</label>
-                                <select id="registerAs" name="registerAs" className="form-control" ref={register({ validate: value => value != '' })} ref={register} required>
+                                <select id="registerAs" name="registerAs" className="form-control" ref={register({ validate: value => value !== '' })} ref={register} required>
                                     <option value="">--Select--</option>
                                     {registerAsData.map((items, index) => {
                                         return (

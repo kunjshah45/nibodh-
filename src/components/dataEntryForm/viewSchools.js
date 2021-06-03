@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import Datatable from '../common/datatable';
 import SchoolService from '../../services/school';
 import Pagination from 'react-js-pagination';
-import moment from 'moment'
 
 function ViewSchools(props) {
     const [data, setData] = useState([])

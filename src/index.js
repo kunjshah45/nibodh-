@@ -1,16 +1,14 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-import $ from 'jquery';
-import Popper from 'popper.js';
+
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 
-import React, { Fragment, useEffect, useState, lazy, Suspense } from "react";
+import React, { Fragment, lazy, Suspense } from "react";
 import ReactDOM from 'react-dom';
 
-import { HashRouter, Router, Route, Switch, BrowserRouter } from "react-router-dom";
+import {  Router, Route, Switch } from "react-router-dom";
 
 import './index.css';
 
-import { ConnectedRouter } from 'connected-react-router';
 import { ScrollContext } from "react-router-scroll-4";
 import history from "./utils/history";
 
