@@ -2,7 +2,9 @@ var API_LINK, FILE_LINK;
 
 const testAdminAddr = 'testexpapp.nibodh.com';
 const localhostAdminAddr = 'localhost';
-if (window.location.href.indexOf(testAdminAddr) > -1 || window.location.href.indexOf(localhostAdminAddr) > -1) {
+const enviroment = process.env.REACT_APP_ENVIROMENT
+// if (window.location.href.indexOf(testAdminAddr) > -1 || window.location.href.indexOf(localhostAdminAddr) > -1) {
+if (enviroment === 'testing') {
     API_LINK = 'https://nibodh-backend.herokuapp.com/api/';
     // API_LINK = 'https://testexpapp.nibodh.com/api/';
     FILE_LINK = 'https://nibodh-educare-v1.s3.us-east-2.amazonaws.com/';
