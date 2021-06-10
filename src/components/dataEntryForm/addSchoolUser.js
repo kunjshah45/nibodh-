@@ -11,7 +11,9 @@ function AddSchoolUser(props) {
         console.log("item",item);
         let response = await SchoolService.addSchoolUser(item);
 
-        props.history.push("/viewSchools")
+        console.log(response.createSchoolDetails.id);
+        let schoolId = response.createSchoolDetails.id;
+        props.history.push("/updateSchool/" + schoolId)
     }
 
     const viewSchools = () => {
@@ -52,13 +54,13 @@ function AddSchoolUser(props) {
                             <div className='col-6'>
                                 <div className="form-group">
                                     <label for="schoolEmail">School Email</label>
-                                    <input type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" className="form-control" name="schoolEmail" id="schoolEmail" placeholder="School Email" required ref={register} />
+                                    <input type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" className="form-control" name="schoolEmail" id="schoolEmail" placeholder="School Email" ref={register} />
                                 </div>
                             </div>
                             <div className='col-6'>
                                 <div className="form-group">
                                     <label for="password">Password</label>
-                                    <input type="password" className="form-control" name="password" id="password" placeholder="Password" required ref={register} />
+                                    <input type="password" className="form-control" name="password" id="password" placeholder="Password" ref={register} />
                                 </div>
                             </div>
                         </div>
@@ -70,7 +72,7 @@ function AddSchoolUser(props) {
                                 <input type="number" className="form-control" name="pincode" id="pincode" placeholder="Pincode" required ref={register} />
                             </div>
                         </div>
-                        <div className='col-6'>
+                        {/* <div className='col-6'>
                             <div className="form-group">
                                 <label for="registerAs">Register As</label>
                                 <select id="registerAs" name="registerAs" className="form-control" ref={register({ validate: value => value !== '' })} ref={register} required>
@@ -82,10 +84,10 @@ function AddSchoolUser(props) {
                                     })}
                                 </select>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
 
-                    <div className='row my-2'>
+                    {/* <div className='row my-2'>
                         <div className='col-4'>
                             <div className="form-group">
                                 <label for="firstName">First Name</label>
@@ -104,9 +106,9 @@ function AddSchoolUser(props) {
                                 <input type="text" className="form-control" name="lastName" id="lastName" placeholder="Last Name" required ref={register} />
                             </div>
                         </div>
-                    </div>
+                    </div> */}
 
-                    <div className='row my-2'>
+                    {/* <div className='row my-2'>
                         <div className='col-6'>
                             <div className="form-group">
                                 <label for="personalPhone">Personal Phone</label>
@@ -119,7 +121,7 @@ function AddSchoolUser(props) {
                                 <input type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" className="form-control" name="personalEmail" id="personalEmail" placeholder="Personal Email" required ref={register} />
                             </div>
                         </div>
-                    </div>
+                    </div> */}
                     <button type="submit" className="btn btn-primary">Submit</button>
                 </form>
             </div>

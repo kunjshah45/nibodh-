@@ -13,6 +13,8 @@ function UpdateSchoolData(props) {
     const [modal, setModal] = useState();
     const [modalData, setModalData] = useState();
 
+    const [otherChecked, setOtherChecked] = useState(false);
+
     let schoolDetailsId = props.match.params.schoolDetailsId;
 
     const editBoardData = (data) => {
@@ -103,8 +105,7 @@ function UpdateSchoolData(props) {
         payload.schoolDetailsId = schoolDetails._id
 
         let response = await SchoolService.updateSchoolDetails(item);
-        console.log("response", response);
-        // props.history.push("/viewSchools")
+        if(response) window.location.reload();
     }
 
     async function fetchSchoolData(payload) {
@@ -144,13 +145,13 @@ function UpdateSchoolData(props) {
                 <form className="form mx-3 my-3" onSubmit={handleSubmit(onSubmitSchoolDetails)}>
                     <div className="form-group">
                         <label for="schoolName">School Unique</label>
-                        <input type="text" className="form-control" name="schoolUnique" id="schoolUnique" value={schoolDetails.schoolUnique} disabled />
+                        <input type="text" className="form-control" name="schoolUnique" id="schoolUnique" value={schoolDetails.schoolUnique} ref={register} disabled />
                     </div>
                     <div className='row my-2'>
                         <div className='col-12'>
                             <div className="form-group">
                                 <label for="schoolName">School Name</label>
-                                <input type="text" className="form-control" name="schoolName" id="schoolName" value={schoolDetails.schoolName} disabled />
+                                <input type="text" className="form-control" name="schoolName" id="schoolName" defaultValue={schoolDetails.schoolName} ref={register} />
                             </div>
                         </div>
                     </div>
@@ -159,13 +160,13 @@ function UpdateSchoolData(props) {
                         <div className='col-6'>
                             <div className="form-group">
                                 <label for="schoolEmail">School Email</label>
-                                <input type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" className="form-control" name="schoolEmail" id="schoolEmail" value={schoolDetails.schoolEmail} disabled />
+                                <input type="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$" className="form-control" name="schoolEmail" id="schoolEmail" defaultValue={schoolDetails.schoolEmail} ref={register} />
                             </div>
                         </div>
                         <div className='col-6'>
                             <div className="form-group">
                                 <label for="pincode">Pincode</label>
-                                <input type="number" className="form-control" name="pincode" id="pincode" value={schoolDetails.pincode} disabled />
+                                <input type="number" className="form-control" name="pincode" id="pincode" defaultValue={schoolDetails.pincode} ref={register} />
                             </div>
                         </div>
                     </div>
@@ -303,10 +304,10 @@ function UpdateSchoolData(props) {
                             <label for="trustName">Trust Name</label>
                             <input type="text" placeholder='Trust Name' className="form-control" name="trustName" id="trustName" defaultValue={schoolDetails.trustName} ref={register} />
                         </div>
-                        <div className='col-6'>
+                        {/* <div className='col-6'>
                             <label for="branchName">Branch Name</label>
                             <input type="text" placeholder='Branch Name' className="form-control" name="branchName" id="branchName" defaultValue={schoolDetails.branchName} ref={register} />
-                        </div>
+                        </div> */}
                     </div>
 
                     <div className='row my-2'>
@@ -343,11 +344,11 @@ function UpdateSchoolData(props) {
                     </div>
 
                     <div className='row my-2'>
-                        <div className='col-12'>
-                            <label for="facilities">Facilities</label>
-                            {facilities.map((items, index) => {
-                                if (schoolDetails.facilities && schoolDetails.facilities.some(item => item === items._id)) {
-                                    return (
+                        <label for="facilities">Facilities</label>
+                        {facilities.map((items, index) => {
+                            if (schoolDetails.facilities && schoolDetails.facilities.some(item => item === items._id)) {
+                                return (
+                                    <div className='col-3'>
                                         <div className="form-check form-check" key={items._id}>
                                             <input className="form-check-input"
                                                 type="checkbox"
@@ -357,10 +358,12 @@ function UpdateSchoolData(props) {
                                                 ref={register} />
                                             <label className="form-check-label" >{items.name}</label>
                                         </div>
-                                    )
-                                }
-                                else {
-                                    return (
+                                    </div>
+                                )
+                            }
+                            else {
+                                return (
+                                    <div className='col-3'>
                                         <div className="form-check form-check" key={items._id}>
                                             <input className="form-check-input"
                                                 type="checkbox"
@@ -369,10 +372,20 @@ function UpdateSchoolData(props) {
                                                 ref={register} />
                                             <label className="form-check-label" >{items.name}</label>
                                         </div>
-                                    )
-                                }
+                                    </div>
+                                )
+                            }
 
-                            })}
+                        })}
+                        <div>
+                            <input
+                                className="form-check-input"
+                                type="checkbox"
+                                ref={register}
+                                defaultChecked={(otherChecked || schoolDetails.otherFacilities)}
+                                onChange={() => { setOtherChecked(!otherChecked) }} />
+                            <label className="form-check-label" >Others </label>
+                            {(otherChecked || schoolDetails.otherFacilities) ? <input type='text' name='otherFacilities' defaultValue={schoolDetails.otherFacilities} ref={register} /> : null}
                         </div>
                     </div>
 
@@ -424,6 +437,7 @@ function UpdateSchoolData(props) {
                 </form>
             </div>
             {modal ? <EditBoard toggle={toggle} modal={modal} modalData={modalData} masterData={{ boards: boards, educationMedium: educationMedium }} /> : null}
+
         </div>
 
     );
